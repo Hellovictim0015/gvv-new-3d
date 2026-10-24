@@ -1,0 +1,314 @@
+@import "tailwindcss";
+
+:root {
+  --brand-blue-top: #0a1233;
+  --brand-blue-bot: #1e2b75;
+  --brand-yellow: #F5C842;
+  --brand-yellow-hot: #ffd76a;
+  --brand-cyan: #5BC0EB;
+}
+
+@theme inline {
+  --color-brand-blue-top: var(--brand-blue-top);
+  --color-brand-blue-bot: var(--brand-blue-bot);
+  --color-brand-yellow: var(--brand-yellow);
+  --color-brand-cyan: var(--brand-cyan);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html, body { margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  background: var(--brand-blue-top);
+  color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+}
+
+.bg-brand-gradient {
+  background: linear-gradient(180deg, #0a1233 0%, #1e2b75 100%);
+}
+
+.gate-card {
+  transition: transform 0.4s ease-out, filter 0.4s ease-out;
+  filter: drop-shadow(0 0 6px rgba(91, 192, 235, 0.35));
+  will-change: transform, filter;
+}
+.gate-card:hover {
+  transform: scale(1.03);
+  filter:
+    drop-shadow(0 0 14px rgba(91, 192, 235, 0.85))
+    drop-shadow(0 0 28px rgba(91, 192, 235, 0.45));
+}
+/* sliding double-door gate effect */
+.gate-door {
+  background:
+    linear-gradient(180deg, rgba(91,192,235,0.08) 0%, transparent 6%, transparent 94%, rgba(91,192,235,0.08) 100%),
+    linear-gradient(135deg, #1a2a6a 0%, #050a20 100%);
+  transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: transform;
+}
+.gate-door-left {
+  border-right: 1px solid rgba(91, 192, 235, 0.7);
+  box-shadow: inset -10px 0 18px rgba(0,0,0,0.55);
+}
+.gate-door-right {
+  border-left: 1px solid rgba(91, 192, 235, 0.7);
+  box-shadow: inset 10px 0 18px rgba(0,0,0,0.55);
+}
+.gate-card:hover .gate-door-left {
+  transform: translateX(-100%);
+}
+.gate-card:hover .gate-door-right {
+  transform: translateX(100%);
+}
+
+.hero-drag-path {
+  stroke-dasharray: 120;
+  stroke-dashoffset: 120;
+}
+
+.school-cloud {
+  animation: school-cloud-drift 5.5s ease-in-out infinite alternate;
+  filter: drop-shadow(0 12px 22px rgba(255, 255, 255, 0.14));
+  will-change: transform;
+}
+
+@keyframes school-cloud-drift {
+  from {
+    transform: translate3d(-28px, 4px, 0);
+  }
+  to {
+    transform: translate3d(34px, -8px, 0);
+  }
+}
+
+/* Drag-to-rotate control under the 3D school model */
+.rotate-orb-ring {
+  animation: rotate-orb-pulse 2.2s ease-out infinite;
+}
+.rotate-orb-icon {
+  animation: rotate-orb-swing 3s ease-in-out infinite;
+}
+.rotate-arrow-left {
+  animation: rotate-arrow-left 1.4s ease-in-out infinite;
+}
+.rotate-arrow-right {
+  animation: rotate-arrow-right 1.4s ease-in-out infinite;
+}
+
+@keyframes rotate-orb-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+@keyframes rotate-orb-swing {
+  0%, 100% {
+    transform: rotate(-18deg);
+  }
+  50% {
+    transform: rotate(18deg);
+  }
+}
+@keyframes rotate-arrow-left {
+  0%, 100% {
+    transform: translateX(0);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translateX(-5px);
+    opacity: 1;
+  }
+}
+@keyframes rotate-arrow-right {
+  0%, 100% {
+    transform: translateX(0);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translateX(5px);
+    opacity: 1;
+  }
+}
+
+/* "Arc reactor" orb: blue liquid rises with drag energy (--fill 0..1, set from
+   SchoolModelBanner), HUD ring turns with the island (--yaw). When full the
+   wrapper gets .is-charged and the whole orb goes white-hot. */
+.reactor-glass {
+  background: radial-gradient(circle at 50% 35%, rgba(30, 58, 138, 0.6), rgba(5, 11, 20, 0.88));
+  box-shadow:
+    inset 0 0 12px rgba(56, 189, 248, 0.35),
+    0 0 0 2px #eed165,
+    0 0 22px rgba(56, 189, 248, 0.45);
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+.reactor-liquid {
+  height: calc(var(--fill, 0) * 100%);
+  background: linear-gradient(to top, #1d4ed8, #0ea5e9 70%, #67e8f9);
+  box-shadow: 0 -3px 10px rgba(103, 232, 249, 0.55);
+  transition: background 0.4s ease;
+}
+.reactor-wave {
+  fill: #67e8f9;
+  animation: reactor-wave 1.4s linear infinite;
+  transition: fill 0.4s ease;
+}
+.reactor-icon {
+  color: #fff;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45));
+  transition: color 0.4s ease;
+}
+.reactor-hud {
+  color: #67e8f9;
+  transform: rotate(var(--yaw, 0rad));
+  filter: drop-shadow(0 0 4px rgba(103, 232, 249, 0.8));
+  transition: color 0.4s ease;
+}
+.reactor-hud circle {
+  stroke: currentColor;
+}
+.reactor-ring-inner {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: reactor-spin 7s linear infinite reverse;
+}
+.reactor-label-charged {
+  display: none;
+}
+
+.is-charged .reactor-glass {
+  background: #fff;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 28px 8px rgba(255, 255, 255, 0.9),
+    0 0 60px 20px rgba(103, 232, 249, 0.7);
+  animation: reactor-flash 0.7s ease-out;
+}
+.is-charged .reactor-liquid {
+  background: linear-gradient(to top, #e0f2fe, #fff);
+  box-shadow: none;
+}
+.is-charged .reactor-wave {
+  fill: #fff;
+}
+.is-charged .reactor-icon {
+  color: #0284c7;
+  filter: none;
+}
+.is-charged .reactor-hud {
+  color: #fff;
+  filter: drop-shadow(0 0 6px #fff);
+}
+.is-charged .reactor-label-idle {
+  display: none;
+}
+.is-charged .reactor-label-charged {
+  display: inline;
+}
+
+@keyframes reactor-wave {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes reactor-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes reactor-flash {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  35% {
+    transform: scale(1.18);
+    filter: brightness(1.6);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reactor-wave,
+  .reactor-ring-inner,
+  .is-charged .reactor-glass,
+  .school-cloud,
+  .rotate-orb-ring,
+  .rotate-orb-icon,
+  .rotate-arrow-left,
+  .rotate-arrow-right {
+    animation: none;
+  }
+}
+
+.submit-btn {
+  transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
+}
+.submit-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 24px rgba(245, 200, 66, 0.55);
+}
+
+/* ── Vision-card "light-streak phase" teleport ───────────────────────────
+   Hover: a clean cyan energy glow + a single bright light streak sweeping
+   across (.is-charging). Click: GSAP compresses the card to a thin bright line
+   of light, flashes, then the streak expands away — the .is-phasing class adds
+   the intense cyan/white glow that makes the compressed card read as light. */
+.vision-card-wrap {
+  position: relative;
+  will-change: transform, filter;
+}
+
+/* Hover — cyan energize glow + one light-streak sweep. */
+.vision-card-wrap.is-charging {
+  filter:
+    drop-shadow(0 0 10px rgba(0, 225, 255, 0.55))
+    drop-shadow(0 0 24px rgba(0, 170, 255, 0.32));
+}
+.vision-card-wrap.is-charging::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  border-radius: 1rem;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent 38%,
+    rgba(200, 250, 255, 0.85) 50%,
+    transparent 62%
+  );
+  mix-blend-mode: screen;
+  animation: gvv-streak-sweep 0.6s ease-out 1;
+}
+
+/* Click — GSAP drives the compress/expand; this just supplies the hot glow so
+   the thin compressed card looks like a bar of light. */
+.vision-card-wrap.is-phasing {
+  z-index: 30;
+}
+
+@keyframes gvv-streak-sweep {
+  0%   { transform: translateX(-120%); opacity: 0; }
+  20%  { opacity: 1; }
+  100% { transform: translateX(120%); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vision-card-wrap.is-charging::after {
+    animation: none;
+    display: none;
+  }
+}
