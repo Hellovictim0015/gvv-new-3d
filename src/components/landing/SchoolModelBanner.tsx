@@ -542,7 +542,7 @@ export default function SchoolModelBanner() {
       >
         <button
           type="button"
-          className="group flex items-center gap-2 sm:gap-3 px-2.5 py-2 cursor-grab active:cursor-grabbing touch-none"
+          className="group flex items-center gap-2 sm:gap-3 rounded-full px-2.5 py-2 cursor-grab active:cursor-grabbing touch-none outline-none focus-visible:ring-2 focus-visible:ring-[#67e8f9]/70"
           aria-label="Drag to rotate the school model"
           onPointerDown={(event) => {
             event.currentTarget.setPointerCapture(event.pointerId);

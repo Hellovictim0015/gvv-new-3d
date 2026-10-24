@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Phone } from 'lucide-react';
 import Navbar from './Navbar';
 import {
   DESKTOP_QUERY,
@@ -110,10 +111,12 @@ export default function Hero() {
         <SchoolModelBanner />
         <Link
           href="/admission"
-          className="hero-btn -mt-16 sm:-mt-36 flex items-center gap-3 rounded-full border border-[#C79F32] bg-[#EED165] px-6 py-2.5 text-sm font-medium text-black shadow-sm transition-colors hover:bg-[#E3C556]"
+          className="hero-btn -mt-7 sm:-mt-16 md:-mt-[100px] lg:-mt-32 flex items-center gap-3 rounded-full border border-[#C79F32] bg-[#EED165] px-6 py-2.5 text-sm font-medium text-black shadow-sm transition-colors hover:bg-[#E3C556]"
         >
           Admission Open
-          <div className="h-3.5 w-3.5 bg-[#005AA3]"></div>
+          <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#005AA3]">
+            <Phone size={12} className="text-white" fill="currentColor" />
+          </div>
         </Link>
       </div>
 
