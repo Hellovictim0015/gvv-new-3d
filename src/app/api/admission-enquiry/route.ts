@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
+import { isAuthorizedAdminRequest } from "@/lib/auth";
 
 // POST API - To save form data to the MySQL database
 export async function POST(request: Request) {
@@ -30,8 +31,11 @@ export async function POST(request: Request) {
   }
 }
 
-// GET API - To fetch data with Pagination
+// GET API - To fetch data with Pagination (admin only: parents' names and phone numbers)
 export async function GET(request: Request) {
+  if (!(await isAuthorizedAdminRequest(request))) {
+    return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+  }
   try {
     const { searchParams } = new URL(request.url);
 

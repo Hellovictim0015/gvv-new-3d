@@ -182,6 +182,19 @@ export default function FeeTable() {
           </table>
         </div>
 
+        {/* Fee notes — same wording as the old site's fee page. */}
+        <div className="mt-8 rounded-xl border border-blue-100 bg-blue-50/40 p-6 text-sm leading-relaxed text-gray-700">
+          <h3 className="mb-3 text-base font-bold text-[#020B3D]">Note</h3>
+          <ol className="list-decimal space-y-1.5 pl-5">
+            <li>Above mentioned fee includes only &ldquo;Tuition Fee&rdquo; and &ldquo;Annual Allocation&rdquo;.</li>
+            <li>This fee is for the session 2026-27.</li>
+            <li>Tuition fee is charged for 10 months.</li>
+            <li>You can pay the fees as per your convenience (in quarterly or in given installments).</li>
+            <li>Bus fees is charged separately for those who wish to avail school bus facility. (It is charged for 10 months as per the distance.)</li>
+            <li>Registration form fees, caution money and admission fees is charged separately which is one time payable at the time of admission. (Caution money is refundable.)</li>
+          </ol>
+        </div>
+
       </div>
     </section>
   );

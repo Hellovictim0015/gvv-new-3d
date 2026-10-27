@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
+import { isAuthorizedAdminRequest } from "@/lib/auth";
 
 // PUT API - Update existing fee structure
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  if (!(await isAuthorizedAdminRequest(request))) {
+    return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+  }
   try {
     const { id } = await params;
     const body = await request.json();
@@ -47,6 +51,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
 // DELETE API - Delete fee structure
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  if (!(await isAuthorizedAdminRequest(request))) {
+    return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+  }
   try {
     const { id } = await params;
 

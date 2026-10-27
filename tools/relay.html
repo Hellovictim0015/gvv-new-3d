@@ -1,0 +1,19 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>relay</title>
+<script>
+// Fetches a file from this local server and hands its bytes to the parent/opener page.
+const target = window.opener || window.parent;
+window.addEventListener('message', async (e) => {
+  if (e.origin !== 'https://m.techbytex.in') return;
+  const { id, name } = e.data || {};
+  try {
+    const r = await fetch('/' + encodeURIComponent(name));
+    const buf = await r.arrayBuffer();
+    target.postMessage({ id, name, ok: r.ok, type: r.headers.get('content-type'), buf }, 'https://m.techbytex.in', [buf]);
+  } catch (err) {
+    target.postMessage({ id, name, ok: false, error: String(err) }, 'https://m.techbytex.in');
+  }
+});
+target.postMessage({ ready: true }, 'https://m.techbytex.in');
+</script>

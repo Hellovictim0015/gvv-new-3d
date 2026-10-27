@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Mail, MapPin, Phone } from 'lucide-react';
-import { footerLinks, keywordLinks } from '@/lib/siteNav';
+import { footerLinks, keywordLinks, policyLinks } from '@/lib/siteNav';
 
 const socialLinks = [
   {
@@ -144,8 +144,15 @@ export default function Footer() {
 
       <div className="w-full bg-[#0c1ca3] py-5 px-4 text-center">
         <p className="text-gray-200 text-sm">
-          &copy; 2023 Garima Vidhya Vihar Shiksha Avam Samaj Sewa Sanstha
+          &copy; 2026 Garima Vidhya Vihar Shiksha Avam Samaj Sewa Sanstha
         </p>
+        <ul className="mt-2 flex flex-wrap justify-center gap-x-5 gap-y-1 text-xs text-gray-300">
+          {policyLinks.map((item) => (
+            <li key={item.href}>
+              <Link href={item.href} className="hover:text-white transition-colors">{item.label}</Link>
+            </li>
+          ))}
+        </ul>
       </div>
 
     </footer>

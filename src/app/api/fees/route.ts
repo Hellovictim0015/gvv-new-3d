@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
+import { isAuthorizedAdminRequest } from "@/lib/auth";
 
 // GET API - Fetch all fee structures
 export async function GET() {
@@ -15,6 +16,9 @@ export async function GET() {
 
 // POST API - Add new fee structure
 export async function POST(request: Request) {
+  if (!(await isAuthorizedAdminRequest(request))) {
+    return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+  }
   try {
     const body = await request.json();
     const { className, installment1, installment2, installment3, annualAllocation } = body;

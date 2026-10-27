@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { getPageMetadata } from "@/lib/seo";
+import { SITE_URL } from "@/lib/siteUrl";
 import "./globals.css";
 
 // ISR: pages are cached and regenerated in the background at most once a
@@ -26,7 +27,8 @@ const geistMono = Geist_Mono({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  return getPageMetadata("/");
+  // metadataBase makes per-page canonical/OG URLs absolute on the live domain.
+  return { metadataBase: new URL(SITE_URL), ...(await getPageMetadata("/")) };
 }
 
 export default function RootLayout({

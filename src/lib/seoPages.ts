@@ -178,8 +178,17 @@ export const SEO_PAGES: SeoPageDef[] = [
     route: "/fees",
     label: "Fees Structure",
     group: "Admissions",
-    defaultTitle: "Fees Structure | Garima Vidhya Vihar",
-    defaultDescription: "Class-wise fee structure for Garima Vidhya Vihar.",
+    defaultTitle: "Best School in Indore with Affordable Fees | Fee Structure 2026-27 | Garima Vidhya Vihar",
+    defaultDescription:
+      "Class-wise tuition fee structure for session 2026-27 at Garima Vidhya Vihar, a CBSE senior secondary school on Airport Road, Indore.",
+  },
+  {
+    route: "/articles",
+    label: "Articles / Blogs",
+    group: "Main",
+    defaultTitle: "Articles & Blogs | Garima Vidhya Vihar",
+    defaultDescription:
+      "Articles on school life, academics, parenting tips, careers and events from Garima Vidhya Vihar, Indore.",
   },
   {
     route: "/uniform",

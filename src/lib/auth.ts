@@ -125,8 +125,8 @@ export function readSessionCookieFromHeader(cookieHeader: string | null | undefi
 // defense in addition to proxy.ts's page-level redirect.
 //
 // TEMPORARILY DISABLED (per request, matches proxy.ts): always authorized, so
-// admin actions work without logging in. To re-enable, restore the
-// token/isValidSessionToken check below.
+// admin actions work without logging in. To re-enable, replace the body with:
+//   return isValidSessionToken(readSessionCookieFromHeader(req.headers.get("cookie")));
 export async function isAuthorizedAdminRequest(_req: Request): Promise<boolean> {
   return true;
 }

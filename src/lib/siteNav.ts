@@ -78,13 +78,22 @@ export const footerLinks: NavLink[] = [
   { label: 'TC / Mandatory Disclosure', href: '/mandatory-disclosures' },
 ];
 
-// Footer "Know More": SEO keyword links the school asked for, each pointing
-// at the most relevant page.
+// Footer "Know More": SEO keyword pages carried over from the old site, kept at
+// their old URLs (content: src/data/seoLandingPages.json).
 export const keywordLinks: NavLink[] = [
-  { label: 'Best Senior Secondary School in Indore', href: '/about/school-wings' },
-  { label: 'Best CBSE School in Indore', href: '/about/affiliation' },
-  { label: 'Best Primary School in Indore', href: '/about/school-wings' },
-  { label: 'Best School near Airport', href: '/contact' },
-  { label: 'Best School in MP', href: '/about' },
-  { label: 'Best School in Indore', href: '/' },
+  { label: 'Best Senior Secondary School in Indore', href: '/best-senior-secondary-school-in-indore-3' },
+  { label: 'Best CBSE School in Indore', href: '/garima-vidya-vihar-senior-secondary-school-best-cbse-school-in-indore' },
+  { label: 'Best Primary School in Indore', href: '/best-primary-school-in-indore' },
+  { label: 'Best School near Airport', href: '/best-school-near-airport' },
+  { label: 'Best School in MP', href: '/best-school-in-mp' },
+  { label: 'Best School in Indore', href: '/best-school-in-indore' },
+];
+
+// Footer bottom bar: policy pages carried over from the old site (needed for
+// the online fee-payment gateway), served at their old URLs.
+export const policyLinks: NavLink[] = [
+  { label: 'Privacy Policy', href: '/privacy-policy' },
+  { label: 'Terms and Conditions', href: '/terms-and-conditions' },
+  { label: 'Refund & Cancellation Policy', href: '/refund-cancellation-policy' },
+  { label: 'Shipping & Delivery Policy', href: '/shipping-and-delivery-policy' },
 ];

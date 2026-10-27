@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import path from "path";
+import { LEGACY_REDIRECTS } from "./src/lib/legacyRedirects";
 
 // Pin the project root: a stray package-lock.json in the user home folder made
 // Next infer the wrong workspace root (build/dev warning, wrong file tracing).
@@ -27,6 +28,10 @@ const nextConfig: NextConfig = {
   // proxied/tunnelled origin isn't re-fetching the whole clip on every load.
   // NOTE: filenames here are stable, so if you re-encode lab.mp4 you must bump
   // its name (e.g. lab-v2.mp4) or purge the Cloudflare cache to avoid stale video.
+  // 301s from the old WordPress site's URLs (see src/lib/legacyRedirects.ts).
+  async redirects() {
+    return LEGACY_REDIRECTS;
+  },
   async headers() {
     return [
       {
