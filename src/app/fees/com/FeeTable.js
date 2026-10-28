@@ -70,8 +70,37 @@ export default function FeeTable() {
     <section className="bg-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-[1200px] mx-auto">
         
+        {/* Phones: one card per class instead of a 900px-wide table to swipe across. */}
+        <div className="md:hidden space-y-4">
+          {fees.length === 0 && (
+            <p className="p-8 text-center text-gray-500 font-medium">No fee structures found.</p>
+          )}
+          {fees.map((row) => (
+            <div key={row.id} className="rounded-xl border border-blue-100 shadow-[0_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+              <div className="bg-[#040F44] px-4 py-3 text-white font-semibold">{row.className}</div>
+              <dl className="divide-y divide-blue-50 text-sm text-gray-700">
+                {[
+                  ['I - Installment', row.installment1],
+                  ['II - Installment', row.installment2],
+                  ['III - Installment', row.installment3],
+                  ['Annual Allocation', row.annualAllocation],
+                ].map(([label, value]) => (
+                  <div key={label} className="flex justify-between px-4 py-2.5">
+                    <dt>{label}</dt>
+                    <dd className="font-medium">{formatCurrency(value)}</dd>
+                  </div>
+                ))}
+                <div className="flex justify-between px-4 py-3 bg-green-50/40">
+                  <dt className="font-bold text-[#020B3D]">Total</dt>
+                  <dd className="font-bold text-green-700 text-base">{formatCurrency(row.totalFee)}</dd>
+                </div>
+              </dl>
+            </div>
+          ))}
+        </div>
+
         {/* Responsive Table Wrapper */}
-        <div className="w-full overflow-x-auto rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-blue-100">
+        <div className="hidden md:block w-full overflow-x-auto rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-blue-100">
           
           <table className="w-full min-w-[900px] border-collapse text-center">
             

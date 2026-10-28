@@ -1,10 +1,10 @@
 import InfoPage from '@/components/shared/InfoPage';
 import { MANDATORY_DISCLOSURES_PAGE } from '@/lib/infoPages';
+import { getPageMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: `${MANDATORY_DISCLOSURES_PAGE.title} | Garima Vidhya Vihar`,
-  description: MANDATORY_DISCLOSURES_PAGE.intro,
-};
+export async function generateMetadata() {
+  return getPageMetadata('/mandatory-disclosures');
+}
 
 // Disclosure documents are added from admin → Page Content.
 export default function MandatoryDisclosuresPage() {

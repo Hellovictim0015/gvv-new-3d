@@ -351,3 +351,8 @@ body {
 .blog-editor blockquote { border-left: 4px solid #F5C842; padding-left: 1em; font-style: italic; }
 .blog-editor table { border-collapse: collapse; }
 .blog-editor th, .blog-editor td { border: 1px solid #cbd5e1; padding: 0.4em 0.6em; }
+
+/* Vision cards on touch screens: doors opened by VisionCards when in view
+   (desktop opens them on hover). */
+.vision-card-wrap.is-open .vision-door-left { transform: translateX(-100%); opacity: 0; }
+.vision-card-wrap.is-open .vision-door-right { transform: translateX(100%); opacity: 0; }

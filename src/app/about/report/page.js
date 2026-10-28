@@ -2,6 +2,8 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Navbar from '@/components/landing/Navbar';
+import Footer from '@/components/landing/Footer';
 
 // GSAP ScrollTrigger प्लगइन को रजिस्टर करें
 gsap.registerPlugin(ScrollTrigger);
@@ -51,13 +53,15 @@ const AnnualReport = () => {
   }, []);
 
   return (
+    <>
+    <Navbar />
     <div ref={containerRef} className="bg-[#020617] min-h-screen text-white font-sans selection:bg-blue-600 selection:text-white pb-24 overflow-hidden relative">
       
       {/* बैकग्राउंड एम्बिएंट ग्लो इफ़ेक्ट */}
       <div className="fixed -top-40 left-1/2 -translate-x-1/2 w-[100%] h-[500px] bg-gradient-to-b from-blue-900/30 to-transparent blur-[160px] pointer-events-none z-0"></div>
       <div className="fixed bottom-0 right-0 w-[500px] h-[500px] bg-blue-950/20 blur-[200px] pointer-events-none z-0"></div>
 
-      <div className="max-w-6xl mx-auto px-6 relative z-10 pt-20">
+      <div className="max-w-6xl mx-auto px-6 relative z-10 pt-36">
         
         {/* मुख्य हेडर */}
         <header ref={headerRef} className="text-center mb-24 border-b border-blue-900/40 pb-12">
@@ -281,6 +285,8 @@ const AnnualReport = () => {
 
       </div>
     </div>
+    <Footer />
+    </>
   );
 };
 

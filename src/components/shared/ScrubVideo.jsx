@@ -6,25 +6,28 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
+// iOS Safari resizes the viewport whenever its address bar shows/hides; by
+// default that triggers a ScrollTrigger refresh mid-scroll, which re-measures
+// the pin and makes the page jump. Ignore those height-only resizes.
+ScrollTrigger.config({ ignoreMobileResize: true });
+
 /**
- * A scroll-scrubbed, pinned, full-screen video section (every device, incl.
- * mobile — the scroll animation is intentional there too).
+ * A scroll-scrubbed, pinned, full-screen "video" section (every device).
  *
- * The video is driven from the eased ScrollTrigger progress (disassemble →
- * reassemble plays forward as you scroll down). Geometry is measured immediately
- * (not gated on `loadedmetadata`) so the pin doesn't blank the page on a cold
- * first load, and seeks are skipped while one is in flight so fast scroll-ups
- * don't flood the decoder. Uses `100svh` + `object-cover` so the footage fills
- * the screen in responsive / portrait mode.
+ * Plays a pre-extracted IMAGE SEQUENCE on a <canvas> instead of seeking a
+ * <video>: iPhone Safari seeks video far too slowly (and won't buffer it ahead),
+ * so the clip froze on one frame while scrolling. Drawing a decoded frame is
+ * instant everywhere.
  *
- * Mobile-crash note: scrubbing seeks the decoder hard. To survive that on phones
- * the heavy hero WebGL canvas is UNMOUNTED once it scrolls out of view (see
- * SchoolModelBanner) so the GPU/decoder memory is free for this video by the time
- * you reach it — that's what stops the page from OOM-crashing here, rather than
- * removing the scrub.
+ * Frames live in /public/frames/<name>/<width>/0001.webp … (extracted from the
+ * source mp4 with ffmpeg: `-vf scale=<width>:-2 -c:v libwebp -quality 72`).
+ * Phones load the 720px set and only every 2nd frame to keep decoded-image
+ * memory low (iOS kills tabs that use too much); larger screens load 1280px,
+ * every frame.
  */
 export default function ScrubVideo({
-  src,
+  frames,
+  frameCount,
   title = '',
   subtitle = '',
   objectFit = 'cover',
@@ -33,27 +36,22 @@ export default function ScrubVideo({
   poster = '',
 }) {
   const container = useRef(null);
-  const videoRef = useRef(null);
-  // Don't download the (multi-MB) clip on initial page load — it's usually far
-  // down the page. Start fetching only when the section is within ~2 viewports,
-  // so the hero/3D model gets the bandwidth first and the clip is buffered by the
-  // time the user scrolls to it. (preload="auto" still fully buffers once mounted,
-  // which is required for smooth scrubbing.)
+  const canvasRef = useRef(null);
+  const imagesRef = useRef([]); // index → HTMLImageElement once decoded
+  const indicesRef = useRef([]); // frame numbers (1-based) this device loads
+  const progressRef = useRef(0);
+
+  // Don't download the frames on initial page load — the section is usually
+  // far down the page. Start once it's within ~2 viewports of the scroll
+  // position. (Deterministic scroll check, NOT IntersectionObserver — that fired
+  // during initial layout before the tall 3D hero set the page height.)
   const [shouldLoad, setShouldLoad] = useState(false);
   useEffect(() => {
     const el = container.current;
     if (!el || shouldLoad) return;
-    // Deterministic scroll-position gate (NOT IntersectionObserver — that fires
-    // during initial layout before the tall 3D canvas sets page height, falsely
-    // latching the load). Start fetching once the section is within ~2 viewports
-    // of the current scroll position, giving it lead time to buffer.
     const check = () => {
-      // Only act once the user has actually scrolled — at scrollY 0 the layout
-      // may still be settling (dynamic ssr:false hero), and these clips are always
-      // below the fold, so there's nothing to eagerly load at the top anyway.
       if (window.scrollY <= 0) return;
-      const top = el.getBoundingClientRect().top;
-      if (top < window.innerHeight * 2) {
+      if (el.getBoundingClientRect().top < window.innerHeight * 2) {
         setShouldLoad(true);
         window.removeEventListener('scroll', check);
         window.removeEventListener('resize', check);
@@ -61,10 +59,7 @@ export default function ScrubVideo({
     };
     window.addEventListener('scroll', check, { passive: true });
     window.addEventListener('resize', check);
-    // Safe one-shot check after layout settles — handles a reload that restores
-    // scroll position already near/at this section (no scroll event fires then).
-    // The scrollY>0 guard inside check() keeps it from loading at the top.
-    const t = setTimeout(check, 1200);
+    const t = setTimeout(check, 1200); // reload restored near this section
     return () => {
       clearTimeout(t);
       window.removeEventListener('scroll', check);
@@ -72,52 +67,116 @@ export default function ScrubVideo({
     };
   }, [shouldLoad]);
 
+  // Draw the frame for the current scroll progress (nearest loaded one).
+  const draw = () => {
+    const canvas = canvasRef.current;
+    const indices = indicesRef.current;
+    if (!canvas || !indices.length) return;
+    const p = pingPong ? 1 - Math.abs(2 * progressRef.current - 1) : progressRef.current;
+    const want = Math.round(p * (indices.length - 1));
+    let img = null;
+    for (let d = 0; d < indices.length && !img; d++) {
+      img = imagesRef.current[want - d] || imagesRef.current[want + d] || null;
+    }
+    if (!img) return;
+
+    const ctx = canvas.getContext('2d');
+    const cw = canvas.width;
+    const ch = canvas.height;
+    const scale =
+      objectFit === 'contain'
+        ? Math.min(cw / img.naturalWidth, ch / img.naturalHeight)
+        : Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
+    const w = img.naturalWidth * scale;
+    const h = img.naturalHeight * scale;
+    ctx.clearRect(0, 0, cw, ch);
+    ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
+  };
+
+  // Size the canvas to the section in device pixels (capped at 2x).
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const el = container.current;
+    if (!canvas || !el) return;
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(el.clientWidth * dpr);
+      canvas.height = Math.round(el.clientHeight * dpr);
+      draw();
+    };
+    resize();
+    const ro = new ResizeObserver(resize);
+    ro.observe(el);
+    return () => ro.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Load the frame sequence: first frame, then the rest in order.
+  useEffect(() => {
+    if (!shouldLoad) return;
+    const small = window.matchMedia('(max-width: 900px)').matches;
+    const width = small ? 720 : 1280;
+    const step = small ? 2 : 1;
+    const indices = [];
+    for (let i = 1; i <= frameCount; i += step) indices.push(i);
+    if (indices[indices.length - 1] !== frameCount) indices.push(frameCount);
+    indicesRef.current = indices;
+    imagesRef.current = new Array(indices.length).fill(null);
+
+    let cancelled = false;
+    const loadOne = (slot) =>
+      new Promise((resolve) => {
+        const img = new Image();
+        img.src = `${frames}/${width}/${String(indices[slot]).padStart(4, '0')}.webp`;
+        // decode() up front so drawing during scroll never stalls on decoding.
+        (img.decode ? img.decode() : new Promise((r, j) => { img.onload = r; img.onerror = j; }))
+          .then(() => {
+            if (cancelled) return;
+            imagesRef.current[slot] = img;
+            draw();
+          })
+          .catch(() => {})
+          .finally(resolve);
+      });
+
+    (async () => {
+      await loadOne(0);
+      // A few parallel lanes: fast enough to finish before the user arrives,
+      // without flooding a phone's connection.
+      let next = 1;
+      const lane = async () => {
+        while (!cancelled && next < indices.length) await loadOne(next++);
+      };
+      await Promise.all([lane(), lane(), lane(), lane()]);
+    })();
+
+    return () => {
+      cancelled = true;
+      imagesRef.current = [];
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldLoad, frames, frameCount]);
+
   useGSAP(
     () => {
-      const video = videoRef.current;
-      if (!video) return;
-
       const st = ScrollTrigger.create({
         trigger: container.current,
         start: 'top top',
         end: '+=300%',
-        scrub: 1,
+        scrub: 0.5,
         pin: true,
         // A sibling above this section uses a negative margin (GarimaImpact's
         // torn-paper overlap), which shifts this section's page position. Recompute
         // the pin start/end on every refresh so a layout shift can't leave the pin
-        // measured against stale geometry (the cause of the robot-scrub regression).
+        // measured against stale geometry.
         invalidateOnRefresh: true,
         anticipatePin: 1,
         onUpdate: (self) => {
-          const d = video.duration;
-          if (!d || Number.isNaN(d)) return;
-          // pingPong maps scroll 0→1 to a triangle wave (0→1→0): the clip plays
-          // forward to its midpoint then reverses, so a clip that only
-          // disassembles still reads as disassemble → reassemble on scroll-down.
-          const p = pingPong ? 1 - Math.abs(2 * self.progress - 1) : self.progress;
-          const target = p * d;
-          if (!video.seeking && Math.abs(video.currentTime - target) > 0.02) {
-            video.currentTime = target;
-          }
+          progressRef.current = self.progress;
+          draw();
         },
       });
-
-      const onMeta = () => {
-        try {
-          video.currentTime = 0.001;
-        } catch (e) {
-          /* not seekable yet */
-        }
-        ScrollTrigger.refresh();
-      };
-      if (video.readyState >= 1) onMeta();
-      else video.addEventListener('loadedmetadata', onMeta, { once: true });
-
-      return () => {
-        st.kill();
-        video.removeEventListener('loadedmetadata', onMeta);
-      };
+      return () => st.kill();
     },
     { scope: container },
   );
@@ -128,16 +187,7 @@ export default function ScrubVideo({
       className={`relative flex h-[100svh] w-full items-center justify-center overflow-hidden bg-black bg-cover bg-center ${className}`}
       style={poster ? { backgroundImage: `url(${poster})` } : undefined}
     >
-      <video
-        ref={videoRef}
-        className="absolute inset-0 h-full w-full"
-        style={{ objectFit }}
-        src={shouldLoad ? src : undefined}
-        poster={poster || undefined}
-        muted
-        playsInline
-        preload="auto"
-      />
+      <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden />
       {(title || subtitle) && (
         <div className="pointer-events-none absolute inset-x-0 bottom-10 z-10 px-6 text-center mix-blend-difference md:bottom-14">
           {title && (

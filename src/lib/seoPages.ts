@@ -126,6 +126,28 @@ export const SEO_PAGES: SeoPageDef[] = [
     defaultDescription: "Notable achievements and accolades of Garima Vidhya Vihar and its students.",
   },
   {
+    route: "/about/educators",
+    label: "About – Our Educators (Staff)",
+    group: "About",
+    defaultTitle: "Our Educators | Garima Vidhya Vihar",
+    defaultDescription: "Meet the teaching staff of Garima Vidya Vihar.",
+  },
+  {
+    route: "/mandatory-disclosures",
+    label: "Mandatory Disclosure",
+    group: "About",
+    defaultTitle: "Mandatory Disclosures | Garima Vidhya Vihar",
+    defaultDescription:
+      "CBSE-mandated disclosure documents for Garima Vidhya Vihar — affiliation details, infrastructure and academic records.",
+  },
+  {
+    route: "/tc-download",
+    label: "Transfer Certificate",
+    group: "About",
+    defaultTitle: "Transfer Certificate | Garima Vidhya Vihar",
+    defaultDescription: "Request or download a transfer certificate (TC) from Garima Vidhya Vihar, Indore.",
+  },
+  {
     route: "/academic",
     label: "Curriculum",
     group: "Academic",

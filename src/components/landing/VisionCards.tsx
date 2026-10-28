@@ -1,5 +1,5 @@
 'use client';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
@@ -34,6 +34,27 @@ export default function VisionCards() {
     },
     { scope: ref },
   );
+
+  // Touch screens never fire hover, so the gate doors (opened on hover) would
+  // stay shut — a black box in every card. There, open each card's doors once
+  // it scrolls into view instead.
+  useEffect(() => {
+    const root = ref.current;
+    if (!root || !window.matchMedia('(hover: none)').matches || !('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-open');
+            io.unobserve(e.target);
+          }
+        }
+      },
+      { threshold: 0.5 },
+    );
+    root.querySelectorAll('.vision-card-wrap').forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
 
   // HOVER: energize — a cyan glow + a single light-streak sweep (CSS
   // .is-charging). Re-armed each enter so the sweep replays; settles into the
@@ -124,8 +145,8 @@ export default function VisionCards() {
                 />
 
                 <div className="absolute top-[13%] bottom-[12%] left-[33%] right-[33%] z-10 flex overflow-hidden rounded-md pointer-events-none">
-                  <div className="relative w-1/2 h-full bg-[#050b14] border-r border-blue-500/20 shadow-[inset_-10px_0_20px_rgba(0,0,0,0.8)] transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:-translate-x-full group-hover:opacity-0"></div>
-                  <div className="relative w-1/2 h-full bg-[#050b14] border-l border-blue-500/20 shadow-[inset_10px_0_20px_rgba(0,0,0,0.8)] transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:translate-x-full group-hover:opacity-0"></div>
+                  <div className="vision-door-left relative w-1/2 h-full bg-[#050b14] border-r border-blue-500/20 shadow-[inset_-10px_0_20px_rgba(0,0,0,0.8)] transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:-translate-x-full group-hover:opacity-0"></div>
+                  <div className="vision-door-right relative w-1/2 h-full bg-[#050b14] border-l border-blue-500/20 shadow-[inset_10px_0_20px_rgba(0,0,0,0.8)] transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:translate-x-full group-hover:opacity-0"></div>
                 </div>
               </div>
 

@@ -96,9 +96,15 @@ export default function RoboticsPageClient({ aboutImage, projectImages = [] }) {
                 className="object-cover group-hover:scale-110 transition-transform duration-700"
               />
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center text-blue-500/30 font-mono text-xl group-hover:scale-110 transition-transform duration-700">
-                [ 3D RENDER PLACEHOLDER ]
-              </div>
+              // No image set in admin → Site Images yet: show the lab render
+              // instead of a placeholder label.
+              <img
+                src="/lab_poster.webp"
+                alt="Robotics lab at Garima Vidhya Vihar"
+                loading="lazy"
+                decoding="async"
+                className="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition-transform duration-700"
+              />
             )}
           </div>
         </div>
@@ -106,7 +112,8 @@ export default function RoboticsPageClient({ aboutImage, projectImages = [] }) {
 
       {/* ================= LAB FLY-THROUGH SECTION ================= */}
       <ScrubVideo
-        src="/lab.mp4"
+        frames="/frames/lab"
+        frameCount={120}
         poster="/lab_poster.webp"
         subtitle="[ SCROLL TO EXPLORE ]"
         className="border-y border-blue-500/20"

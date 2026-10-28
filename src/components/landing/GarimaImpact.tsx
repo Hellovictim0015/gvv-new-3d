@@ -259,7 +259,8 @@ export default function GarimaImpact({ lifePhotos }: { lifePhotos: string[] }) {
       {/* Robot disassembly fly-through — scroll-scrubbed, full clip plays forward
           (disassemble → reassemble). Sits directly above "Innovation At Garima". */}
       <ScrubVideo
-        src="/robot_assembly.mp4"
+        frames="/frames/robot"
+        frameCount={152}
         poster="/robot_assembly_poster.webp"
         objectFit="cover"
         pingPong
