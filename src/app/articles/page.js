@@ -1,14 +1,16 @@
 import Link from 'next/link';
 import { CalendarDays } from 'lucide-react';
 import PageShell from '@/components/landing/PageShell';
-import { BLOG_POSTS, formatBlogDate } from '@/lib/legacyContent';
+import { formatBlogDate } from '@/lib/legacyContent';
+import { listPublishedBlogs } from '@/lib/blogs';
 import { getPageMetadata } from '@/lib/seo';
 
 export async function generateMetadata() {
   return getPageMetadata('/articles');
 }
 
-export default function ArticlesPage() {
+export default async function ArticlesPage() {
+  const posts = await listPublishedBlogs();
   return (
     <PageShell>
       <section className="relative px-6 pb-12 text-center">
@@ -24,7 +26,7 @@ export default function ArticlesPage() {
       </section>
 
       <div className="mx-auto grid max-w-6xl gap-6 px-4 pb-24 sm:grid-cols-2 sm:px-6 lg:grid-cols-3">
-        {BLOG_POSTS.map((post) => (
+        {posts.map((post) => (
           <Link
             key={post.slug}
             href={`/${post.slug}`}

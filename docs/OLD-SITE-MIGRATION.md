@@ -6,7 +6,12 @@
   (`/<slug>`) by `src/app/[slug]/page.tsx`, so their Google rankings carry over with no redirect.
   Content: `src/data/blogs.json`, `src/data/seoLandingPages.json`; images in `public/wp-content/uploads/`
   (same paths as the old site). Listing: `/articles`.
-- To pull new posts from the old site before launch: `python scripts/import-old-site.py`, then rebuild.
+- **Blogs are managed in admin → Articles / Blogs** (`blogs` table; `src/lib/blogs.ts`, `/api/blogs`).
+  The table is created on first use and, while empty, seeded from `src/data/blogs.json`, so a fresh
+  server needs no manual step. That JSON is also the fallback if the DB is down.
+  Admin HTML is sanitised on save (`cleanBlogHtml`). Images uploaded in the editor go to `uploads/blogs/`.
+- `python scripts/import-old-site.py` re-imports from the old site, but only fills an **empty** `blogs`
+  table — once the admin is in use, add new posts there instead.
 - **301 redirects** for every other old page + WordPress archives/sitemaps/PDFs: `src/lib/legacyRedirects.ts`
   (wired into `next.config.ts`).
 - **sitemap.xml / robots.txt**: `src/app/sitemap.ts`, `src/app/robots.ts`.

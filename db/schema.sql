@@ -182,3 +182,24 @@ CREATE TABLE IF NOT EXISTS `uniform_reels` (
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Articles / Blogs (admin → Articles / Blogs). Each post is served at /<slug>,
+-- the same URL it had on the old WordPress site. src/lib/blogs.ts also creates
+-- this table on first use and seeds it with the old site's posts
+-- (src/data/blogs.json) when it is empty.
+CREATE TABLE IF NOT EXISTS `blogs` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `slug` VARCHAR(191) NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `excerpt` TEXT NULL,
+  `content` MEDIUMTEXT NOT NULL,
+  `seo_title` VARCHAR(255) NULL,
+  `meta_description` VARCHAR(500) NULL,
+  `image_url` VARCHAR(255) NULL,
+  `published_date` DATE NOT NULL,
+  `is_published` TINYINT(1) NOT NULL DEFAULT 1,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_blogs_slug` (`slug`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

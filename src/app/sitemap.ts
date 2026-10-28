@@ -1,10 +1,12 @@
 import type { MetadataRoute } from 'next';
 import { SEO_PAGES } from '@/lib/seoPages';
 import { ACADEMIC_PAGES, EVENT_PAGES } from '@/lib/infoPages';
-import { BLOG_POSTS, SEO_LANDING_PAGES } from '@/lib/legacyContent';
+import { SEO_LANDING_PAGES } from '@/lib/legacyContent';
+import { listPublishedBlogs } from '@/lib/blogs';
 import { SITE_URL } from '@/lib/siteUrl';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const blogs = await listPublishedBlogs();
   const routes = new Set<string>([
     ...SEO_PAGES.map((p) => p.route),
     ...Object.keys(ACADEMIC_PAGES).map((slug) => `/academic/${slug}`),
@@ -21,7 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly' as const,
       priority: route === '/' ? 1 : 0.7,
     })),
-    ...BLOG_POSTS.map((post) => ({
+    ...blogs.map((post) => ({
       url: `${SITE_URL}/${post.slug}`,
       lastModified: post.modified,
       changeFrequency: 'yearly' as const,

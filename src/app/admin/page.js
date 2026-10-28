@@ -23,6 +23,7 @@ import {
   BookMarked,
   LayoutList,
   Clapperboard,
+  Newspaper,
 } from "lucide-react";
 // Ensure these paths match your folder structure exactly!
 import Enquiries from "./com/Enquiries";
@@ -41,6 +42,7 @@ import Forms from "./com/Forms";
 import SEO from "./com/SEO";
 import SiteImages from "./com/SiteImages";
 import UniformReels from "./com/UniformReels";
+import Blogs from "./com/Blogs";
 
 // --- Mock Data for Staff and Members ---
 const mockStaff = [
@@ -65,6 +67,7 @@ const NAV_GROUPS = [
   {
     label: "Content",
     items: [
+      { key: "blogs", label: "Articles / Blogs", icon: Newspaper },
       { key: "achievements", label: "Achievements", icon: Trophy },
       { key: "gallery", label: "Photo Gallery", icon: Images },
       { key: "uniform-reels", label: "Uniform Reels", icon: Clapperboard },
@@ -103,6 +106,7 @@ const TAB_TITLES = {
   admissions: "Admission Enquiry",
   fee: "Fee Management",
   prospectus: "Prospectus",
+  blogs: "Articles / Blogs",
   achievements: "Achievements",
   gallery: "Photo Gallery",
   "uniform-reels": "Uniform Reels",
@@ -143,6 +147,8 @@ export default function AdminDashboard() {
         return <Fee />;
       case "prospectus":
         return <Prospectus />;
+      case "blogs":
+        return <Blogs />;
       case "achievements":
         return <Achievements />;
       case "gallery":

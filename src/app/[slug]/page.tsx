@@ -3,28 +3,32 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, CalendarDays } from 'lucide-react';
 import PageShell from '@/components/landing/PageShell';
-import {
-  BLOG_POSTS,
-  SEO_LANDING_PAGES,
-  findBlogPost,
-  findLandingPage,
-  formatBlogDate,
-} from '@/lib/legacyContent';
+import { SEO_LANDING_PAGES, findLandingPage, formatBlogDate } from '@/lib/legacyContent';
+import { getPublishedBlog, listPublishedBlogs } from '@/lib/blogs';
 
-// Old-site URLs that live at the root: every blog post and the footer SEO
-// pages. Real routes (/about, /fees, ...) always win over this dynamic segment;
-// anything that isn't one of these slugs 404s.
-export const dynamicParams = false;
+// Old-site URLs that live at the root: every blog post (admin → Articles /
+// Blogs) and the footer SEO / policy pages. Real routes (/about, /fees, ...)
+// always win over this dynamic segment; any other slug 404s. New posts added
+// in the admin are rendered on first visit (dynamicParams) and then cached.
+export const dynamicParams = true;
 
-export function generateStaticParams() {
-  return [...SEO_LANDING_PAGES, ...BLOG_POSTS].map(({ slug }) => ({ slug }));
+export async function generateStaticParams() {
+  const blogs = await listPublishedBlogs();
+  return [...SEO_LANDING_PAGES, ...blogs].map(({ slug }) => ({ slug }));
+}
+
+async function resolve(slug: string) {
+  const landing = findLandingPage(slug);
+  if (landing) return { page: landing, blog: null };
+  const blog = await getPublishedBlog(slug);
+  return blog ? { page: blog, blog } : null;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const page = findLandingPage(slug) ?? findBlogPost(slug);
-  if (!page) return {};
-  const blog = findBlogPost(slug);
+  const found = await resolve(slug);
+  if (!found) return {};
+  const { page, blog } = found;
   return {
     title: page.seoTitle,
     description: page.metaDescription,
@@ -41,9 +45,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const blog = findBlogPost(slug);
-  const page = blog ?? findLandingPage(slug);
-  if (!page) notFound();
+  const found = await resolve(slug);
+  if (!found) notFound();
+  const { page, blog } = found;
 
   return (
     <PageShell>
@@ -70,7 +74,8 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           />
         )}
 
-        {/* Content was sanitised to a small tag whitelist by scripts/import-old-site.py. */}
+        {/* Sanitised to a small tag whitelist: by scripts/import-old-site.py for
+            imported content, by cleanBlogHtml (src/lib/blogs.ts) for admin edits. */}
         <div className="legacy-content" dangerouslySetInnerHTML={{ __html: page.html }} />
 
         {blog && (

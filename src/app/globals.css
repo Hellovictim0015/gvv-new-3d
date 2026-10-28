@@ -337,3 +337,17 @@ body {
 .legacy-content th { background: rgb(59 130 246 / 0.15); color: #fff; }
 .legacy-content td ul { margin: 0; }
 .legacy-content iframe { width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 1rem; }
+
+/* Admin → Articles / Blogs editor (light admin theme). */
+.blog-editor { color: #334155; line-height: 1.7; }
+.blog-editor > * + * { margin-top: 0.75em; }
+.blog-editor h2 { font-size: 1.4rem; font-weight: 800; color: #0f172a; }
+.blog-editor h3 { font-size: 1.15rem; font-weight: 700; color: #0f172a; }
+.blog-editor h4, .blog-editor h5 { font-weight: 700; color: #0f172a; }
+.blog-editor ul { list-style: disc; padding-left: 1.5em; }
+.blog-editor ol { list-style: decimal; padding-left: 1.5em; }
+.blog-editor a { color: #4f46e5; text-decoration: underline; }
+.blog-editor img { max-width: 100%; height: auto; border-radius: 0.5rem; }
+.blog-editor blockquote { border-left: 4px solid #F5C842; padding-left: 1em; font-style: italic; }
+.blog-editor table { border-collapse: collapse; }
+.blog-editor th, .blog-editor td { border: 1px solid #cbd5e1; padding: 0.4em 0.6em; }
