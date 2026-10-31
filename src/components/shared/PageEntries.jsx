@@ -113,14 +113,22 @@ export default function PageEntries({ pageKey, emptyNote }) {
               key={item.id}
               className={`${cardClass} group flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(59,130,246,0.45)]`}
             >
-              <div className="aspect-[4/3] overflow-hidden bg-[#0a1445]">
+              {/* Full image at its own aspect ratio (result posters etc. are tall
+                  and must not be cropped); click opens it full size. */}
+              <a
+                href={item.image_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block bg-[#0a1445]"
+                title="Open full image"
+              >
                 <img
                   src={item.image_url}
                   alt={item.title}
                   loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="block h-auto w-full"
                 />
-              </div>
+              </a>
               <div className="flex flex-1 flex-col p-5">
                 <EntryText item={item} />
               </div>
