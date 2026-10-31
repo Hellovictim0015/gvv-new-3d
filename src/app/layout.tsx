@@ -39,6 +39,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      // globals.css sets `scroll-behavior: smooth`; this tells Next 16 to switch
+      // it off during route changes so a new page opens at the top instantly
+      // (otherwise the slow smooth scroll got cut short by GSAP's pin refresh and
+      // pages like /robotics opened halfway down).
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
