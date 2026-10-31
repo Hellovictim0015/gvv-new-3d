@@ -179,7 +179,7 @@ export const SEO_PAGES: SeoPageDef[] = [
     route: "/academic/external-results",
     label: "Academic – External Exam Results",
     group: "Academic",
-    defaultTitle: "Results of External Exams | Garima Vidhya Vihar",
+    defaultTitle: "Results of External Examination | Garima Vidhya Vihar",
     defaultDescription: "Results of Olympiads, competitive and other external examinations taken by Garima Vidhya Vihar students.",
   },
   {

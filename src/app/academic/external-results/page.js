@@ -58,7 +58,7 @@ export default function ExternalResultsPage() {
         <div className="relative z-10 mx-auto max-w-3xl">
           <p className="mb-4 text-xs font-bold uppercase tracking-[0.25em] text-[#EED165]">Academics · Results</p>
           <h1 className="mb-6 bg-gradient-to-b from-blue-300 via-blue-500 to-blue-900 bg-clip-text text-4xl font-black tracking-tight text-transparent md:text-6xl">
-            Results of External Exams
+            Results of External Examination
           </h1>
           <p className="mx-auto text-lg leading-relaxed text-blue-200/70">
             Results of Olympiads, competitive and other external examinations taken by our students.

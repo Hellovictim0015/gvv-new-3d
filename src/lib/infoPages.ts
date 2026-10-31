@@ -14,8 +14,7 @@ export const ACADEMIC_PAGES: Record<string, InfoPageDef> = {
   pedagogy: {
     title: 'Pedagogy',
     section: 'Academics · Curriculum',
-    intro:
-      'How we teach at Garima Vidhya Vihar — experiential, activity-based and technology-enabled learning that puts the student at the centre of every classroom.',
+    intro: 'Learning that evolves with every stage.',
   },
   syllabus: {
     title: 'Syllabus',
@@ -25,20 +24,25 @@ export const ACADEMIC_PAGES: Record<string, InfoPageDef> = {
   courses: {
     title: 'Courses Offered',
     section: 'Academics · Curriculum',
-    intro: 'Streams and subject combinations offered from Pre-Primary to Class XII.',
+    intro: 'Stream subjects offered for Grades XI and XII.',
   },
   evaluation: {
     title: 'Evaluation Pattern',
-    section: 'Academics · Examination',
+    section: 'Academics · Assessment',
     intro: 'Our assessment scheme — periodic tests, term examinations and continuous evaluation, as per CBSE guidelines.',
   },
   'date-sheet': {
     title: 'Exam Date Sheet',
-    section: 'Academics · Examination',
+    section: 'Academics · Assessment',
     intro: 'Date sheets for the upcoming periodic tests and term examinations.',
   },
+  'external-date-sheet': {
+    title: 'External Exam Date Sheet',
+    section: 'Academics · Assessment',
+    intro: 'Date sheets for Olympiads, competitive and other external examinations.',
+  },
   'board-results': {
-    title: 'Board Results',
+    title: 'Results of Board Examination',
     section: 'Academics · Results',
     intro: 'CBSE Class X and Class XII board examination results of our students.',
   },
@@ -94,8 +98,16 @@ export const MANDATORY_DISCLOSURES_PAGE: InfoPageDef = {
 
 // Every page whose body is admin-managed via `page_entries`, keyed by route.
 // The admin "Page Content" dropdown lists these in this order.
+// (Pedagogy and Courses Offered have fixed content — src/components/academic —
+// so they are not admin-managed.)
+export const STATIC_ACADEMIC_PAGES = new Set(['pedagogy', 'courses']);
+
 export const CONTENT_PAGES: Record<string, InfoPageDef> = {
-  ...Object.fromEntries(Object.entries(ACADEMIC_PAGES).map(([slug, page]) => [`/academic/${slug}`, page])),
+  ...Object.fromEntries(
+    Object.entries(ACADEMIC_PAGES)
+      .filter(([slug]) => !STATIC_ACADEMIC_PAGES.has(slug))
+      .map(([slug, page]) => [`/academic/${slug}`, page]),
+  ),
   '/about/educators': EDUCATORS_PAGE,
   '/mandatory-disclosures': MANDATORY_DISCLOSURES_PAGE,
 };

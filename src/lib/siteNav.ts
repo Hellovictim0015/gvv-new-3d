@@ -14,31 +14,31 @@ export const academicGroups: NavGroup[] = [
   {
     title: 'Curriculum',
     links: [
-      { label: 'Curriculum', href: '/academic/planner' },
+      { label: 'Courses Offered', href: '/academic/courses' },
       { label: 'Pedagogy', href: '/academic/pedagogy' },
       { label: 'Syllabus', href: '/academic/syllabus' },
-      { label: 'Courses Offered', href: '/academic/courses' },
     ],
   },
   {
     title: 'Resources',
     links: [
       { label: 'Book List', href: '/academic/books' },
-      { label: 'Academic Downloads', href: '/about/resources' },
+      { label: 'Academic Download', href: '/about/resources' },
     ],
   },
   {
-    title: 'Examination',
+    title: 'Assessment',
     links: [
       { label: 'Evaluation Pattern', href: '/academic/evaluation' },
       { label: 'Exam Date Sheet', href: '/academic/date-sheet' },
+      { label: 'External Exam Date Sheet', href: '/academic/external-date-sheet' },
     ],
   },
   {
     title: 'Results',
     links: [
-      { label: 'Board Results', href: '/academic/board-results' },
-      { label: 'Results of External Exams', href: '/academic/external-results' },
+      { label: 'Results of Board Examination', href: '/academic/board-results' },
+      { label: 'Results of External Examination', href: '/academic/external-results' },
     ],
   },
 ];

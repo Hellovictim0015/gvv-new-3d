@@ -94,6 +94,9 @@ export default function Navbar() {
           <div className="absolute top-[100%] left-1/2 -translate-x-1/2 w-[640px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 bg-[#08123b]/95 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl grid grid-cols-4 gap-2 p-4 text-left">
             {academicGroups.map((group) => (
               <div key={group.title} className="flex flex-col">
+                <p className="px-3 pb-1 pt-1 text-[11px] font-bold uppercase tracking-[0.15em] text-[#EED165]">
+                  {group.title}
+                </p>
                 {group.links.map((item) => (
                   <Link key={item.label} href={item.href} className="px-3 py-2 text-sm text-white/90 hover:bg-white/10 hover:text-yellow-400 rounded-lg transition-colors">
                     {item.label}
@@ -237,6 +240,9 @@ function MobileMenu({
         <div className="flex flex-col px-4 pb-3 gap-2 border-t border-white/10 pt-2 bg-black/20">
           {groups.map((group) => (
             <div key={group.title || id} className="flex flex-col gap-2">
+              {group.title && (
+                <p className="pt-1 text-[11px] font-bold uppercase tracking-[0.15em] text-[#EED165]">{group.title}</p>
+              )}
               {group.links.map((item) => (
                 <Link key={item.label} href={item.href} onClick={onNavigate} className="text-sm text-white/80 hover:text-yellow-400 py-1">
                   {item.label}

@@ -4,14 +4,17 @@ import type { InfoPageDef } from '@/lib/infoPages';
 
 // `pageKey` is the page's route — its body comes from admin → Page Content.
 // `emptyNote` is extra text shown under the placeholder while no entries exist.
+// `children`, when given, is fixed page content shown instead of the entries.
 export default function InfoPage({
   page,
   pageKey,
   emptyNote,
+  children,
 }: {
   page: InfoPageDef;
   pageKey: string;
   emptyNote?: React.ReactNode;
+  children?: React.ReactNode;
 }) {
   return (
     <PageShell>
@@ -26,7 +29,7 @@ export default function InfoPage({
         </div>
       </section>
       <div className="mx-auto max-w-6xl px-4 pb-24 sm:px-6">
-        <PageEntries pageKey={pageKey} emptyNote={emptyNote} />
+        {children ?? <PageEntries pageKey={pageKey} emptyNote={emptyNote} />}
       </div>
     </PageShell>
   );

@@ -14,17 +14,22 @@ import {
   MOBILE_MODEL_URL,
   MOBILE_QUERY,
   MODEL_URL,
+  MOBILE_POSTER_URL,
+  POSTER_URL,
 } from './schoolModelAssets';
+import SchoolPoster from './SchoolPoster';
 
 // Code-split the 3D banner: a WebGL Canvas can't server-render, and this pulls in
 // three / @react-three + the 16MB GLB. Keeping it out of the initial bundle and
 // loading it client-side shrinks the first load and unblocks the rest of the page.
 const SchoolModelBanner = dynamic(() => import('./SchoolModelBanner'), {
   ssr: false,
+  // Same box as SchoolModelBanner's canvas, showing the still poster, so the
+  // island is visible immediately and nothing shifts when the 3D chunk arrives.
   loading: () => (
     <div className="relative w-full max-w-7xl mx-auto flex flex-col items-center mt-10 sm:mt-14">
-      <div className="relative w-full h-[430px] sm:h-[560px] md:h-[660px] lg:h-[740px] flex items-center justify-center">
-        <div className="h-9 w-9 rounded-full border-2 border-white/20 border-t-[#EED165] animate-spin" />
+      <div className="relative w-full h-[380px] sm:h-[500px] md:h-[600px] lg:h-[680px]">
+        <SchoolPoster />
       </div>
     </div>
   ),
@@ -95,6 +100,8 @@ export default function Hero() {
           three.js chunk; now it downloads in parallel with them. `media` picks
           the one model this screen size will use; crossOrigin="anonymous"
           matches the fetch() that three's loaders make, so the preload is reused. */}
+      <link rel="preload" href={POSTER_URL} as="image" media={DESKTOP_QUERY} fetchPriority="high" />
+      <link rel="preload" href={MOBILE_POSTER_URL} as="image" media={MOBILE_QUERY} fetchPriority="high" />
       <link rel="preload" href={MODEL_URL} as="fetch" crossOrigin="anonymous" media={DESKTOP_QUERY} fetchPriority="high" />
       <link rel="preload" href={MOBILE_MODEL_URL} as="fetch" crossOrigin="anonymous" media={MOBILE_QUERY} fetchPriority="high" />
       <link rel="preload" href={`${DRACO_PATH}draco_wasm_wrapper.js`} as="fetch" crossOrigin="anonymous" />

@@ -117,7 +117,7 @@ const TAB_TITLES = {
   calendar: "Academic Calendar",
   booklist: "Book Lists",
   forms: "Downloadable Forms",
-  "external-results": "Results of External Exams",
+  "external-results": "Results of External Examination",
   staff: "Staff Directory",
   members: "Members",
   seo: "SEO",

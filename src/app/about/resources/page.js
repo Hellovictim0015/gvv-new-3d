@@ -4,13 +4,31 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import PageShell from '@/components/landing/PageShell';
+import { BookOpen, ExternalLink, Library } from 'lucide-react';
+
+// The two external resources the school asked for (they open the official sites).
+const ACADEMIC_LINKS = [
+  {
+    title: 'NCERT Textbooks',
+    desc: 'Read and download NCERT textbooks for every class and subject from the official NCERT website.',
+    href: 'https://ncert.nic.in/textbook.php',
+    host: 'ncert.nic.in',
+    icon: BookOpen,
+  },
+  {
+    title: 'CBSE Publications',
+    desc: 'Curriculum documents, sample papers, support material and other publications from CBSE Academic.',
+    href: 'https://cbseacademic.nic.in/cbse-publication.html',
+    host: 'cbseacademic.nic.in',
+    icon: Library,
+  },
+];
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 export default function DownloadForms() {
   const containerRef = useRef(null);
   const [pdfForms, setPdfForms] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   // Fetch Data from API
   useEffect(() => {
@@ -23,8 +41,6 @@ export default function DownloadForms() {
         }
       } catch (error) {
         console.error("Error fetching forms:", error);
-      } finally {
-        setLoading(false);
       }
     };
     fetchData();
@@ -65,7 +81,40 @@ export default function DownloadForms() {
     >
       <div className="max-w-7xl mx-auto relative z-10 px-6">
 
-        {/* Header Section */}
+        {/* Academic Download: NCERT / CBSE tabs (always shown) */}
+        <div className="text-center mb-10">
+          <h4 className="text-[#00c6ff] font-semibold tracking-wide uppercase text-sm mb-2">
+            Academics · Resources
+          </h4>
+          <h1 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
+            Academic Download
+          </h1>
+          <div className="w-24 h-[4px] bg-[#E9C84A] mx-auto mt-6 rounded-full shadow-[0_0_10px_rgba(233,200,74,0.3)]"></div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-20">
+          {ACADEMIC_LINKS.map(({ title, desc, href, host, icon: Icon }) => (
+            <a
+              key={href}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex flex-col rounded-2xl border border-white/10 bg-white/[0.04] p-6 md:p-8 transition-all duration-300 hover:-translate-y-1 hover:border-[#00c6ff]/40 hover:bg-white/[0.08] hover:shadow-[0_10px_30px_rgba(0,198,255,0.15)]"
+            >
+              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-[#F5C842]/15 text-[#F5C842]">
+                <Icon size={28} />
+              </div>
+              <h2 className="text-xl md:text-2xl font-bold text-white group-hover:text-[#00c6ff] transition-colors">{title}</h2>
+              <p className="mt-2 mb-6 flex-grow text-sm leading-relaxed text-slate-300/85">{desc}</p>
+              <span className="inline-flex items-center gap-2 text-sm font-semibold text-[#00c6ff]">
+                Open {host} <ExternalLink size={15} />
+              </span>
+            </a>
+          ))}
+        </div>
+
+        {/* Downloadable Forms (admin → Downloadable Forms), shown only when there are any */}
+        {pdfForms.length > 0 && (
+        <>
         <div className="text-center mb-16 opacity-0 form-header-elem">
           <h4 className="text-[#00c6ff] font-semibold tracking-wide uppercase text-sm mb-2">
             Document Center
@@ -79,13 +128,7 @@ export default function DownloadForms() {
           <div className="w-24 h-[4px] bg-[#E9C84A] mx-auto mt-6 rounded-full shadow-[0_0_10px_rgba(233,200,74,0.3)]"></div>
         </div>
 
-        {/* Loading State */}
-        {loading ? (
-          <div className="text-center text-white py-10 animate-pulse text-xl">Loading Forms...</div>
-        ) : pdfForms.length === 0 ? (
-          <div className="text-center text-slate-400 py-10">No forms available at the moment.</div>
-        ) : (
-          /* PDF Forms Grid */
+          {/* PDF Forms Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {pdfForms.map((form) => (
               <div
@@ -130,6 +173,7 @@ export default function DownloadForms() {
               </div>
             ))}
           </div>
+        </>
         )}
 
       </div>

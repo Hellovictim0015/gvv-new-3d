@@ -1,7 +1,7 @@
 'use client';
 
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Center, Environment, Html, useGLTF } from '@react-three/drei';
+import { Center, Environment, useGLTF } from '@react-three/drei';
 import { ChevronsLeft, ChevronsRight, Rotate3d } from 'lucide-react';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import type { MutableRefObject } from 'react';
@@ -17,6 +17,7 @@ import {
   MOBILE_MODEL_URL,
   MODEL_URL,
 } from './schoolModelAssets';
+import SchoolPoster from './SchoolPoster';
 
 // Default resting pose (tilted: school on top, flames streaming out the underside).
 const DEFAULT_ROT_X = -0.5;
@@ -27,11 +28,9 @@ const DEFAULT_ROT_Y = 0.25;
 const ROT_X_MIN = -0.85;
 const ROT_X_MAX = -0.15;
 
-// Entrance animation once the GLB has loaded: the island grows, rises up and
-// swings round into its resting pose. Plays once per page load (not again when
-// the canvas remounts after scrolling back to the hero).
-const INTRO_DURATION = 1.8; // seconds
-let introPlayed = false;
+// No entrance animation: a still poster of this exact resting pose is shown
+// while the GLB downloads (SchoolPoster) and cross-fades into the live model,
+// so the model must appear already in its resting pose.
 
 // Material name used by thrust cubes & cylinders in the GLB
 const THRUST_MATERIAL_NAME = 'PaletteMaterial010';
@@ -129,6 +128,7 @@ function SchoolModel({
   fit,
   offsetY,
   rotationTarget,
+  onReady,
 }: {
   url: string;
   fit: number;
@@ -136,10 +136,12 @@ function SchoolModel({
   // the school on top isn't clipped by the canvas top edge.
   offsetY: number;
   rotationTarget: MutableRefObject<RotationTarget>;
+  // Called once the model has actually been drawn (shaders compiled, textures
+  // uploaded), so the poster only fades out over a real frame.
+  onReady: () => void;
 }) {
   const groupRef = useRef<THREE.Group>(null);
-  const introRef = useRef<THREE.Group>(null);
-  const introProgress = useRef(introPlayed ? 1 : 0);
+  const framesDrawn = useRef(0);
   // Self-hosted Draco decoder ('/draco/') — NOT the gstatic CDN (which hangs on
   // some ISPs and blocks the whole scene from rendering/scrolling).
   const { scene } = useGLTF(url, DRACO_PATH);
@@ -246,23 +248,9 @@ function SchoolModel({
   useFrame((state, delta) => {
     if (!groupRef.current) return;
 
-    // Intro: ease-out from small / low / turned-away to the resting pose.
-    // Delta is capped so a long first frame (shader compile) doesn't skip it.
-    if (introRef.current && introProgress.current < 1) {
-      introProgress.current = Math.min(
-        1,
-        introProgress.current + Math.min(delta, 1 / 30) / INTRO_DURATION,
-      );
-      if (introProgress.current >= 1) introPlayed = true;
-    }
-    if (introRef.current) {
-      const t = introProgress.current;
-      const e = 1 - Math.pow(1 - t, 3); // easeOutCubic
-      const rest = 1 - e;
-      introRef.current.scale.setScalar(0.45 + 0.55 * e);
-      introRef.current.position.y = -2.2 * rest;
-      introRef.current.rotation.y = -Math.PI * 0.6 * rest;
-    }
+    // The first frame or two can stall on shader compile / texture upload;
+    // reveal the model only after those.
+    if (framesDrawn.current < 3 && ++framesDrawn.current === 3) onReady();
 
     groupRef.current.rotation.x = THREE.MathUtils.damp(
       groupRef.current.rotation.x,
@@ -282,21 +270,16 @@ function SchoolModel({
   });
 
   return (
-    <group ref={introRef} scale={introPlayed ? 1 : 0.45}>
-      <group ref={groupRef} scale={model.scale} position={[0, offsetY, 0]}>
-        <Center>
-          <primitive object={model.object} />
-        </Center>
-      </group>
+    <group
+      ref={groupRef}
+      scale={model.scale}
+      position={[0, offsetY, 0]}
+      rotation={[DEFAULT_ROT_X, DEFAULT_ROT_Y, 0]}
+    >
+      <Center>
+        <primitive object={model.object} />
+      </Center>
     </group>
-  );
-}
-
-function ModelLoader() {
-  return (
-    <Html center>
-      <div className="h-9 w-9 rounded-full border-2 border-white/20 border-t-[#EED165] animate-spin" />
-    </Html>
   );
 }
 
@@ -342,11 +325,16 @@ export default function SchoolModelBanner() {
   // scroll). The drag rotation lives in a ref, so it's preserved across remounts.
   const heroRef = useRef<HTMLDivElement>(null);
   const [canvasMounted, setCanvasMounted] = useState(true);
+  // Poster stays up until the live model has drawn (again after every remount).
+  const [modelReady, setModelReady] = useState(false);
   useEffect(() => {
     const el = heroRef.current;
     if (!el || typeof IntersectionObserver === 'undefined') return;
     const io = new IntersectionObserver(
-      ([entry]) => setCanvasMounted(entry.isIntersecting),
+      ([entry]) => {
+        setCanvasMounted(entry.isIntersecting);
+        if (!entry.isIntersecting) setModelReady(false);
+      },
       // Keep it alive a bit beyond the viewport so a small scroll wobble near the
       // edge doesn't thrash mount/unmount.
       { rootMargin: '250px 0px 250px 0px' },
@@ -354,6 +342,7 @@ export default function SchoolModelBanner() {
     io.observe(el);
     return () => io.disconnect();
   }, []);
+
 
   // "Arc reactor" drag control: every pixel dragged pours energy into the orb
   // (blue liquid rising like water). At 100% it goes white-hot ("charged"),
@@ -464,6 +453,8 @@ export default function SchoolModelBanner() {
           aria-hidden
         />
 
+        <SchoolPoster hidden={modelReady} />
+
         {/* The REAL 3D model renders on every device at FULL quality — antialiasing,
             retina dpr, and the HDR `<Environment>` (sunset) that gives the school its
             warm lighting + material reflections (this is what made it "look great";
@@ -491,7 +482,9 @@ export default function SchoolModelBanner() {
           {canvasMounted && (
           <Canvas
             shadows={isDesktop}
-            dpr={[1, 2]}
+            // Phones already have 2–3x screens; rendering at up to 1.5x keeps the
+            // model sharp while cutting the GPU work roughly in half vs 2x.
+            dpr={isDesktop ? [1, 2] : [1, 1.5]}
             camera={{ position: [0, 2.8, 6.6], fov: 38 }}
             gl={{
               antialias: true,
@@ -514,7 +507,7 @@ export default function SchoolModelBanner() {
               shadow-bias={-0.0005}
             />
 
-            <Suspense fallback={<ModelLoader />}>
+            <Suspense fallback={null}>
               <SchoolModel
                 url={isDesktop ? MODEL_URL : MOBILE_MODEL_URL}
                 // Narrow phone screens can't take the larger desktop size
@@ -522,6 +515,7 @@ export default function SchoolModelBanner() {
                 fit={isDesktop ? 11 : 7.6}
                 offsetY={isDesktop ? -1.9 : -1.4}
                 rotationTarget={rotationTarget}
+                onReady={() => setModelReady(true)}
               />
             </Suspense>
 
