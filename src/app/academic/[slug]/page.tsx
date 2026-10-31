@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import InfoPage from '@/components/shared/InfoPage';
 import PedagogyContent from '@/components/academic/PedagogyContent';
 import CoursesContent from '@/components/academic/CoursesContent';
+import EvaluationContent from '@/components/academic/EvaluationContent';
+import PageEntries from '@/components/shared/PageEntries';
 import { ACADEMIC_PAGES } from '@/lib/infoPages';
 
 export const dynamicParams = false;
@@ -11,6 +13,15 @@ export const dynamicParams = false;
 const STATIC_CONTENT: Record<string, React.ReactNode> = {
   pedagogy: <PedagogyContent />,
   courses: <CoursesContent />,
+  // Fixed exam-format table, plus anything added in admin → Page Content.
+  evaluation: (
+    <>
+      <EvaluationContent />
+      <div className="mt-12">
+        <PageEntries pageKey="/academic/evaluation" hideEmpty />
+      </div>
+    </>
+  ),
 };
 
 export function generateStaticParams() {

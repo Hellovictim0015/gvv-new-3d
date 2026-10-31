@@ -53,7 +53,10 @@ const cardClass =
 
 // Admin-managed body of an <InfoPage> (admin → Page Content). Text/PDF entries
 // render as full-width panels; entries with a photo render as a card grid.
-export default function PageEntries({ pageKey, emptyNote }) {
+// `hideEmpty`: render nothing while loading / when there are no entries (for
+// pages that already have fixed content above the admin entries).
+/** @param {{ pageKey: string, emptyNote?: import('react').ReactNode, hideEmpty?: boolean }} props */
+export default function PageEntries({ pageKey, emptyNote, hideEmpty = false }) {
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -74,6 +77,7 @@ export default function PageEntries({ pageKey, emptyNote }) {
     };
   }, [pageKey]);
 
+  if (hideEmpty && (isLoading || error || items.length === 0)) return null;
   if (isLoading) return <p className="text-center text-slate-400">Loading...</p>;
   if (error) return <p className="text-center text-red-400">Could not load details: {error}</p>;
   if (items.length === 0) {
